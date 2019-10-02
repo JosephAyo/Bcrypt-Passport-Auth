@@ -17,9 +17,9 @@ const keys = require('./config/keys');
 const localStorage = require('localStorage');
 
 
-mongoose.connect(url, {
-    useMongoClient: true
-});
+const uri ='mongodb+srv://josephayo:mongodb360@cluster0-ys6nl.mongodb.net/test?retryWrites=true&w=majority';
+
+mongoose.connect(uri);
 
 mongoose.Promise = global.Promise;
 
@@ -79,14 +79,8 @@ app.post('/signup', (req, res, next) => {
                         password: hash
                     })
                     .then(result => {
-                        res.status(200).json({
-                            message: 'NEW USER CREATED',
-                            user: {
-                                username: username,
-                                email: email,
-                                phoneNumber: phoneNumber,
-                                password: hash
-                            }
+                        res.sendFile(path.join(__dirname, 'public') + '/success.html', {
+                            title: 'Success'
                         });
                     });
             });
@@ -110,37 +104,39 @@ app.post('/login', function (req, res) {
         username: username
     }, function (err, user) {
         if (err) throw err;
-        if (!user) {
+        if (user.length<1) {
             console.log('unknown user');
-            return done(null, false, {
-                message: 'Unknown User'
-            });
+            res.status(404).json({error:'Invalid username or password!!!'}); 
+            // done(null, false, {
+            // message: 'Unknown User'
+            // });
         } else {
             console.log(`passport saw this ==========> ${user[0].password}`);
-        }
-        bcrypt.compare(password, user[0].password, function (err, isMatch) {
-            if (err) throw err;
-            if (isMatch) {
-                console.log(`SUCCESS ${user[0].username} successfully logged in`);
-                console.log(`user[0]._id: ${user[0]._id}`);
-                var payload = {
-                    email: user[0].email,
-                    username: user[0].username
-                };
-                const token = jwt.sign(payload,
-                    keys.secretOrKey, {
-                        expiresIn: "1h"
+            bcrypt.compare(password, user[0].password, function (err, isMatch) {
+                if (err) throw err;
+                if (isMatch) {
+                    console.log(`SUCCESS ${user[0].username} successfully logged in`);
+                    console.log(`user[0]._id: ${user[0]._id}`);
+                    var payload = {
+                        email: user[0].email,
+                        username: user[0].username
+                    };
+                    const token = jwt.sign(payload,
+                        keys.secretOrKey, {
+                            expiresIn: "1h"
+                        });
+                    res.json({
+                        confirmation: 'success',
+                        response: token,
+                        user: user[0].username
                     });
-                res.json({
-                    confirmation: 'success',
-                    response: token,
-                    user: user[0].username
-                });
-            } else {
-                console.log('not confirmed');
-                res.status(401).end('Invalid username or password!!!');
-            }
-        });
+                } else {
+                    console.log('not confirmed');
+                    res.status(404).json({error:'Invalid username or password!!!'});
+                }
+            });
+        }
+        
     });
 });
 

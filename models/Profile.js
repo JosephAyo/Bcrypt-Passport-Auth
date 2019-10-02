@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
 var url = 'mongodb://localhost/authen';
+const uri ='mongodb+srv://josephayo:mongodb360@cluster0-ys6nl.mongodb.net/test?retryWrites=true&w=majority';
 
-mongoose.connect(url, {
-    useNewUrlParser: true
-});
+mongoose.connect(uri);
 
 //create new Schema named Profile
 const Profile = new mongoose.Schema({

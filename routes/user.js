@@ -19,7 +19,7 @@ router.use(bodyParser.json());
 
 const mongoose = require('mongoose');
 var url = 'mongodb://localhost/encrypt';
-
+const uri ='mongodb+srv://josephayo:mongodb360@cluster0-ys6nl.mongodb.net/test?retryWrites=true&w=majority';
 /* GET users listing. */
 router.get('/', passport.authenticate('jwt', {
     session: false
