@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="/stylesheets/style.css">
+    <script src="vue.js"></script>
+</head>
+
+<body>
+    <div id="app" class="container-div">
+        <h1>Welcome {{User}}</h1>
+        <div class="form-div">
+            <form name="interestForm">
+                <input type="text" name="interest" placeholder="Field of interest">
+            </form>
+            <button onclick="sendInterest()">Update Interest</button><br><br><br>
+            <form name="blogPostForm">
+                <input type="text" name="blogPost" placeholder="Blog Post">
+            </form>
+            <button onclick="sendBlogPost()">Update Blog Post</button><br><br><br>
+            <button onclick="useToken()">Access Private Route</button>
+            <button @click="allUsers">Get all Users</button>
+            <ul>
+                <li v-for='(user, i) in Users'>
+                    {{user.data.username}} 
+                    <span @click="fetchUser"> 
+                        <button @click="index=i" v-bind:id="i"> view profile</button>
+                    </span>
+                </li><br><br><br>
+            </ul><br>
+            <hr>
+            <div v-if='show'>
+                <h3>{{viewedUserGen.data.username}}'s Profile</h3>
+                <p>Email Address: {{viewedUserGen.data.email}}</p>
+                <p>Phone Number: 0{{viewedUserGen.data.phoneNumber}}</p>
+                <p>Interest: {{viewedUserGen.data.interest}}</p>
+                <p>Blog Post: {{viewedUserGen.data.blogPost}}</p>
+                <p><i>Comments</i></p>
+                <ul>
+                    <li v-for='(comment, i) in viewedUserGen.data.comments'>
+                        {{comment}}
+                    </li>
+                </ul>
+                <form name="commentForm">
+                    <input type="text" name="comment" placeholder="add a comment">
+                    <button @click="sendComment">Comment</button>
+                </form>
+            </div>
+            <br>
+            <hr>
+            <button onclick="signOut()">Sign Out</button>
+        </div>
+    </div>
+    <script>
+        function useToken() {
+            var bearer = "Bearer " + JSON.parse(window.localStorage.getItem('token'));
+            console.log(bearer);
+            fetch('/user/current', {
+                method: 'GET',
+                withCredentials: true,
+                headers: {
+                    'Authorization': bearer,
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                return res.json();
+            }).then(data => {
+                console.log(data);
+            }).catch(err => {
+                console.log(`error: ${err}`);
+            })
+        }
+
+        function sendInterest() {
+            const rawData = [{
+                propName: "interest",
+                value: document.interestForm.interest.value
+            }]
+            const data = JSON.stringify(rawData);
+            var bearer = "Bearer " + JSON.parse(window.localStorage.getItem('token'));
+            fetch('/user/current', {
+                method: 'PATCH',
+                body: data,
+                withCredentials: true,
+                headers: {
+                    'Authorization': bearer,
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                return res.json();
+            }).then(data => {
+                console.log(data);
+                window.location.href = '/user.html';
+            }).catch(err => {
+                console.log(`error: ${err}`);
+            })
+        }
+
+        function sendBlogPost() {
+            var blogText = document.blogPostForm.blogPost.value;
+            const rawData = [{
+                propName: "blogPost",
+                value: blogText
+            }]
+            const data = JSON.stringify(rawData);
+            var bearer = "Bearer " + JSON.parse(window.localStorage.getItem('token'));
+            fetch('/user/current', {
+                method: 'PATCH',
+                body: data,
+                withCredentials: true,
+                headers: {
+                    'Authorization': bearer,
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                return res.json();
+            }).then(data => {
+                console.log(data);
+                window.location.href = '/user.html';
+            }).catch(err => {
+                console.log(`error: ${err}`);
+            })
+        }
+
+        function signOut() {
+            window.localStorage.removeItem('token');
+            window.localStorage.removeItem('user');
+            window.location.href = '/index.html';
+        }
+
+
+        new Vue({
+            el: "#app",
+            data: {
+                User: (JSON.parse(window.localStorage.getItem('user'))),
+                Users: [],
+                index: 0,
+                viewedUserGen: '',
+                show: false
+            },
+            methods: {
+                allUsers: function () {
+                    var vm = this;
+                    var bearer = "Bearer " + JSON.parse(window.localStorage.getItem('token'));
+                    fetch('/user', {
+                        method: 'GET',
+                        withCredentials: true,
+                        headers: {
+                            'Authorization': bearer,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(res => {
+                        return res.json();
+                    }).then(data => {
+                        // console.log(data);
+                        vm.Users = data.users;
+                        console.log(vm.Users);
+                    }).catch(err => {
+                        console.log(`error: ${err}`);
+                    })
+                },
+                fetchUser: function () {
+                    this.show = true;
+                    console.log(this.Users[this.index].data.id);
+                    this.viewedUserGen = this.Users[this.index];
+                },
+                sendComment: function () {
+                    const rawData = {
+                        id: this.Users[this.index].data.id,
+                        comment: document.commentForm.comment.value
+                    };
+                    var bearer = "Bearer " + JSON.parse(window.localStorage.getItem('token'));
+                    const data = JSON.stringify(rawData);
+                    fetch('/user/addComment', {
+                        method: 'PATCH',
+                        body: data,
+                        withCredentials: true,
+                        headers: {
+                            'Authorization': bearer,
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(res => {
+                        return res.json();
+                    }).then(data => {
+                        console.log(data);
+                    }).catch(err => {
+                        console.log(`error: ${err}`);
+                    })
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

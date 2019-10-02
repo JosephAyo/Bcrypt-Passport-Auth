@@ -1,0 +1,27 @@
+{
+  "name": "encrypt",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "serve": "nodemon app.js"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "cookie-parser": "~1.4.4",
+    "debug": "~2.6.9",
+    "express": "~4.16.1",
+    "express-session": "^1.16.2",
+    "jsonwebtoken": "^8.5.1",
+    "localStorage": "^1.0.4",
+    "mongo": "^0.1.0",
+    "mongoose": "^5.7.1",
+    "morgan": "~1.9.1",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.3"
+  }
+}

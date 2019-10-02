@@ -1,0 +1,27 @@
+<html>
+
+<head>
+  <title>Express</title>
+  <link rel="stylesheet" href="/stylesheets/style.css">
+</head>
+
+<body>
+  <div class="container-div">
+    <h1>SignUp</h1>
+    <div class="form-div">
+      <form action="/signup" name="signupForm" method="post">
+        <input type="text" name="username" required placeholder="USERNAME"><br><br>
+        <input type="email" name="email" placeholder="EMAIL ADDRESS" required><br><br>
+        <!-- ADD ATTRIBUTE THAT REMOVES THE INC/DEC BUTTONS -->
+        <input type="number" name="phoneNumber"><br><br>
+        <input type="text" name="password" required placeholder="PASSWORD"><br><br>
+        <button type="submit">Submit</button>
+      </form>
+      <form action="/login_page" method="get">
+        <button type="submit">Go to login page</button>
+      </form>
+    </div>
+  </div>
+</body>
+
+</html>
