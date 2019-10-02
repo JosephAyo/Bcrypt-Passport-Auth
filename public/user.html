@@ -164,12 +164,12 @@
                 },
                 fetchUser: function () {
                     this.show = true;
-                    console.log(this.Users[this.index].data.id);
+                    console.log(this.Users[this.index].data._id);
                     this.viewedUserGen = this.Users[this.index];
                 },
                 sendComment: function () {
                     const rawData = {
-                        id: this.Users[this.index].data.id,
+                        id: this.Users[this.index].data._id,
                         comment: document.commentForm.comment.value
                     };
                     var bearer = "Bearer " + JSON.parse(window.localStorage.getItem('token'));
